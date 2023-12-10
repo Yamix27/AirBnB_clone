@@ -1,7 +1,7 @@
 # AirBnB Clone - The Console
 
 **Project:** 0x00. AirBnB Clone - The Console  
-**Team Members:** Abdelhamid Maaira, Mohamed Amyne Boutallaght
+**Team Members:** Mohamed Amyne Boutallaght, Abdelhamid Maaira
 
 Welcome to the AirBnB Clone project! This project is the initial step toward constructing a full web application that replicates Airbnb's functionality. In this phase, we will create a command-line interface (CLI) known as "The Console," allowing us to manage AirBnB objects using various commands.
 
@@ -62,8 +62,8 @@ The project's file organization is structured as follows:
 
 ## Contributors
 
-- [Mohamed Amyne Boutallaght](https://github.com/Yamix27/) (Team Member)
-- [Abdelhamid Maaira](https://github.com/Hmddev23/) (Team Member)
+- [Mohamed Amyne Boutallaght](https://github.com/Yamix27/)
+- [Abdelhamid Maaira](https://github.com/Hmddev23/)
 
 ## License
 
