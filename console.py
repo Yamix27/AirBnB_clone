@@ -130,6 +130,18 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             pass
 
+    def count_instance(self, line):
+        """
+        Usage: count <class> or <class>.count()
+        Returns the count of instances for a specified class.
+        """
+        arguments = parse_arguments(line)
+        counter = 0
+        for objct in storage.all().values():
+            if arguments[0] == objct.__class__.__name__:
+                counter += 1
+        print(counter)
+
     def quit_instance(self, line):
         """Quit command to exit the cmd module"""
         return True
