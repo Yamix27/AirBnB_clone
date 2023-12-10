@@ -156,7 +156,7 @@ class HBNBCommand(cmd.Cmd):
         if len(arguments) == 0:
             print("** class name missing **")
             return False
-        if arguments[0] not in HBNBCommand.__classes:
+        if arguments[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return False
         if len(arguments) == 1:
@@ -192,6 +192,32 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     objct.__dict__[key] = val
         storage.save()
+
+    def all_instance(self, line):
+        """
+        Usage: all or all <class> or <class>.all()
+        Displays string representations of all instances of a specified class.
+        If no class is specified, it shows representations of all instantiated objects.
+        """
+        arguments = parse_arguments(line)
+
+        if len(arguments) > 0:
+            class_name = arguments[0]
+            try:
+                cls = globals()[class_name]
+            except KeyError:
+                print("** class doesn't exist **")
+                return
+        else:
+            class_name = None
+
+        obj_line = []
+
+        for objct in storage.all().values():
+            if class_name is None or isinstance(objct, cls):
+                obj_line.append(objct.__str__())
+
+        print(obj_line)
 
     def quit_instance(self, line):
         """Quit command to exit the cmd module"""
