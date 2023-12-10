@@ -142,6 +142,57 @@ class HBNBCommand(cmd.Cmd):
                 counter += 1
         print(counter)
 
+    def update_instance(self, arg):
+        """
+        Usage: update <class> <id> <attribute_name> <attribute_value> or
+        <class>.update(<id>, <attribute_name>, <attribute_value>) or
+        <class>.update(<id>, <dictionary>)
+        Updates a class instance identified by ID by adding or modifying
+        the specified attribute key/value pair or dictionary.
+        """
+        arguments = parse_arguments(arg)
+        object_dict = storage.all()
+
+        if len(arguments) == 0:
+            print("** class name missing **")
+            return False
+        if arguments[0] not in HBNBCommand.__classes:
+            print("** class doesn't exist **")
+            return False
+        if len(arguments) == 1:
+            print("** instance id missing **")
+            return False
+        if "{}.{}".format(arguments[0], arguments[1]) not in object_dict.keys():
+            print("** no instance found **")
+            return False
+        if len(arguments) == 2:
+            print("** attribute name missing **")
+            return False
+        if len(arguments) == 3:
+            try:
+                type(eval(arguments[2])) != dict
+            except NameError:
+                print("** value missing **")
+                return False
+
+        if len(arguments) == 4:
+            objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
+            if arguments[2] in objct.__class__.__dict__.keys():
+                value_type = type(objct.__class__.__dict__[arguments[2]])
+                objct.__dict__[arguments[2]] = value_type(arguments[3])
+            else:
+                objct.__dict__[arguments[2]] = arguments[3]
+        elif type(eval(arguments[2])) == dict:
+            objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
+            for key, val in eval(arguments[2]).items():
+                if (key in objct.__class__.__dict__.keys() and
+                            type(objct.__class__.__dict__[key]) in {str, int, float}):
+                    value_type = type(objct.__class__.__dict__[key])
+                    objct.__dict__[key] = value_type(val)
+                else:
+                    objct.__dict__[key] = val
+        storage.save()
+
     def quit_instance(self, line):
         """Quit command to exit the cmd module"""
         return True
