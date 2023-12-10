@@ -81,6 +81,25 @@ class HBNBCommand(cmd.Cmd):
                     return cmd_args[cmd[0]](call)
         print("*** Unknown syntax: {}".format(line))
 
+    def create_instance(self, line):
+        """
+        Generates a new instance of BaseModel,
+        saves it to the JSON file, and displays the ID.
+        Example: $ create BaseModel
+        """
+        arguments = parse_arguments(line)
+        if not arguments:
+            print("** class name missing **")
+            return
+        try:
+            new_inst_cls = globals()[arguments[0]]
+            new_inst = new_inst_cls()
+            new_inst.save()
+            print(new_inst.id)
+        except Exception:
+            print("** class doesn't exist **")
+        return
+
     def show_instance(self, line):
         """
         Displays the string representation of
