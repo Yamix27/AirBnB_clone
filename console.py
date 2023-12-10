@@ -32,15 +32,15 @@ def parse_arguments(arg):
         if brackets is None:
             return [i.strip(",") for i in split(arg)]
         else:
-            lexer = split(arg[: brackets.span()[0]])
-            retl = [i.strip(",") for i in lexer]
-            retl.append(brackets.group())
-            return retl
+            segment = split(arg[: brackets.span()[0]])
+            ret_lt = [i.strip(",") for i in segment]
+            ret_lt.append(brackets.group())
+            return ret_lt
     else:
-        lexer = split(arg[: braces.span()[0]])
-        retl = [i.strip(",") for i in lexer]
-        retl.append(braces.group())
-        return retl
+        segment = split(arg[: braces.span()[0]])
+        ret_lt = [i.strip(",") for i in segment]
+        ret_lt.append(braces.group())
+        return ret_lt
 
 
 class HBNBCommand(cmd.Cmd):
@@ -62,25 +62,58 @@ class HBNBCommand(cmd.Cmd):
     def default(self, line):
         """Default behavior for the cmd module when processing input"""
         cmd_args = {
-            "show": self.do_show,
-            "count": self.do_count,
-            "update": self.do_update,
-            "all": self.do_all,
-            "destroy": self.do_destroy,
+            "show": self.show_instance,
+            "count": self.count_instance,
+            "update": self.update_instance,
+            "all": self.all_instance,
+            "destroy": self.destroy_instance
         }
         match = re.search(r"\.", line)
         if match is not None:
-            arg_list = [line[: match.span()[0]], line[match.span()[1]:]]
-            match = re.search(r"\((.*?)\)", arg_list[1])
+            cmd_arg_list = [line[: match.span()[0]], line[match.span()[1]:]]
+            match = re.search(r"\((.*?)\)", cmd_arg_list[1])
             if match is not None:
-                cmd = [arg_list[1][: match.span()[0]], match.group()[1:-1]]
+                cmd = [cmd_arg_list[1][: match.span()[0]], match.group()[1:-1]]
                 if cmd[0] in cmd_args.keys():
                     call = "{} {}".format(
-                        arg_list[0], cmd[1]
+                        cmd_arg_list[0], cmd[1]
                     )
                     return cmd_args[cmd[0]](call)
         print("*** Unknown syntax: {}".format(line))
 
+    def show_instance(self, line):
+        """
+        Displays the string representation of
+        an instance identified by the class name and ID.
+        Example: $ show BaseModel 1111-2222-3333
+        """
+        arguments = parse_arguments(line)
+        if not arguments:
+            print("** class name missing **")
+            return
+        class_name = arguments[0]
+        try:
+            cls = globals()[class_name]
+        except Exception:
+            print(f"** class doesn't exist **")
+            return
+        if len(arguments) < 2:
+            print("** instance id missing **")
+            return
+        inst_id = arguments[1]
+        key = f"{class_name}.{inst_id}"
+        try:
+            res = storage.all().get(key)
+            if res is None:
+                print("** no instance found **")
+            else:
+                print(res)
+        except Exception:
+            pass
+
+    def quit_instance(self, line):
+        """Quit command to exit the cmd module"""
+        return True
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
