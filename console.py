@@ -219,6 +219,40 @@ class HBNBCommand(cmd.Cmd):
 
         print(obj_line)
 
+    def destroy_instance(self, line):
+        """
+        Deletes an instance based on the class name and ID
+        (saves the change to the JSON file).
+        Example: $ destroy BaseModel 1111-2222-3333.
+        """
+        arguments = parse_arguments(line)
+        if not arguments:
+            print("** class name missing **")
+            return
+        class_name = arguments[0]
+        try:
+            cls = globals()[class_name]
+        except Exception:
+            print(f"** class doesn't exist **")
+            return
+        if len(arguments) < 2:
+            print("** instance id missing **")
+            return
+
+        inst_id = arguments[1]
+        key = f"{class_name}.{inst_id}"
+        try:
+            data_k = storage.all().get(key)
+            if data_k is None:
+                print("** no instance found **")
+                return
+            else:
+                result = storage.all()
+                del result[key]
+                storage.save()
+        except Exception:
+            pass
+
     def quit_instance(self, line):
         """Quit command to exit the cmd module"""
         return True
