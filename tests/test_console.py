@@ -6,12 +6,11 @@ import sys
 import io
 import unittest
 
-from unittest import TestCase
 from unittest.mock import patch
 from console import HBNBCommand
 
 
-class TestHBNBCommand(TestCase):
+class TestHBNBCommand(unittest.TestCase):
     @patch('sys.stdout', new_callable=io.StringIO)
     def assert_stdout(self, expected_output, mock_stdout):
         HBNBCommand().onecmd(expected_output)
