@@ -82,7 +82,7 @@ class HBNBCommand(cmd.Cmd):
                     return cmd_args[cmd[0]](call)
         print("*** Unknown syntax: {}".format(line))
 
-    def create_instance(self, line):
+    def do_create_instance(self, line):
         """
         Generates a new instance of a given class,
         saves it to the JSON file, and displays the ID.
