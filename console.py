@@ -84,22 +84,31 @@ class HBNBCommand(cmd.Cmd):
 
     def create_instance(self, line):
         """
-        Generates a new instance of BaseModel,
+        Generates a new instance of a given class,
         saves it to the JSON file, and displays the ID.
         Example: $ create BaseModel
         """
-        arguments = parse_arguments(line)
-        if not arguments:
-            print("** class name missing **")
-            return
-        try:
-            new_inst_cls = globals()[arguments[0]]
-            new_inst = new_inst_cls()
-            new_inst.save()
-            print(new_inst.id)
-        except Exception:
-            print("** class doesn't exist **")
-        return
+        if line == '':
+            print('** class name missing **')
+        elif line not in HBNBCommand.classes:
+            print('** class doesn\'t exist **')
+        else:
+            if line == 'BaseModel':
+                obj = BaseModel()
+            elif line == 'User':
+                obj = User()
+            elif line == 'Place':
+                obj = Place()
+            elif line == 'State':
+                obj = State()
+            elif line == 'City':
+                obj = City()
+            elif line == 'Amenity':
+                obj = Amenity()
+            elif line == 'Review':
+                obj = Review()
+            storage.save()
+            print(obj.id)
 
     def show_instance(self, line):
         """
@@ -107,29 +116,22 @@ class HBNBCommand(cmd.Cmd):
         an instance identified by the class name and ID.
         Example: $ show BaseModel 1111-2222-3333
         """
-        arguments = parse_arguments(line)
-        if not arguments:
-            print("** class name missing **")
-            return
-        class_name = arguments[0]
-        try:
-            cls = globals()[class_name]
-        except Exception:
-            print(f"** class doesn't exist **")
-            return
-        if len(arguments) < 2:
-            print("** instance id missing **")
-            return
-        inst_id = arguments[1]
-        key = f"{class_name}.{inst_id}"
-        try:
-            res = storage.all().get(key)
-            if res is None:
-                print("** no instance found **")
+        arguments = line.split()
+        if line == '':
+            print('** class name missing **')
+        elif arguments[0] not in HBNBCommand.classes:
+            print('** class doesn\'t exist **')
+        else:
+            if len(arguments) < 2:
+                print('** instance id missing **')
             else:
-                print(res)
-        except Exception:
-            pass
+                class_name = arguments[0]
+                inst_id = arguments[1]
+                key = class_name + '.' + inst_id
+                try:
+                    print(storage.all()[key])
+                except KeyError:
+                    print('** no instance found **')
 
     def count_instance(self, line):
         """
