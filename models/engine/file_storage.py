@@ -77,12 +77,11 @@ class FileStorage:
         """
         Serializes stored instance to the JSON file.
         """
-        res = {}
-
-        for key, obj in FileStorage.__objects.items():
-            res[key] = obj.to_dict()
-        with open(FileStorage.__file_path, "w") as file:
-            json.dump(res, file, indent=4)
+        with open(FileStorage.__file_path, 'w+') as f:
+            res = {}
+            for key, value in FileStorage.__objects.items():
+                res[key] = value.to_dict()
+            json.dump(res, f)
 
     def reload(self):
         """
