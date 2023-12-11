@@ -182,11 +182,11 @@ class HBNBCommand(cmd.Cmd):
                 objct.__dict__[arguments[2]] = value_type(arguments[3])
             else:
                 objct.__dict__[arguments[2]] = arguments[3]
-        elif type(eval(arguments[2])) == dict:
+        elif type(eval(arguments[3])) == dict:
             objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
             for key, val in eval(arguments[2]).items():
-                if (key in objct.__class__.__dict__.keys() and
-                            type(objct.__class__.__dict__[key]) in {str, int, float}):
+                if key in objct.__class__.__dict__.keys() and \
+                type(objct.__class__.__dict__[key]) in {str, int, float}:
                     value_type = type(objct.__class__.__dict__[key])
                     objct.__dict__[key] = value_type(val)
                 else:
