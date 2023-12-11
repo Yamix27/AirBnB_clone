@@ -254,7 +254,16 @@ class HBNBCommand(cmd.Cmd):
             pass
 
     def quit_instance(self, line):
-        """Quit command to exit the cmd module"""
+        """Quit command to exit from cmd"""
+        return True
+
+    def blank_line_instance(self):
+        """Handles blank lines."""
+        pass
+
+    def EOF_instance(self, line):
+        """Ctrl D - to kill the program or exit from cmd"""
+        print("")
         return True
 
 if __name__ == "__main__":
