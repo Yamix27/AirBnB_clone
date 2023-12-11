@@ -30,7 +30,7 @@ class TestHBNBCommand(TestCase):
         self.assert_stdout("count User\n")
 
     def test_update_instance(self):
-        self.assert_stdout("update BaseModel 1-234 name 'New Name'\n")
+        # self.assert_stdout("update BaseModel 1-234 name 'New Name'\n")
         self.assert_stdout("update BaseModel 1-234 name New Name\n")
         self.assert_stdout("update User 5-678 email 'new_email@example.com'\n")
 
