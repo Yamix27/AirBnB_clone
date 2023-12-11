@@ -63,11 +63,11 @@ class HBNBCommand(cmd.Cmd):
     def default(self, line):
         """Default behavior for the cmd module when processing input"""
         cmd_args = {
-            "show": self.show_instance,
-            "count": self.count_instance,
-            "update": self.update_instance,
-            "all": self.all_instance,
-            "destroy": self.destroy_instance
+            "show": self.do_show_instance,
+            "count": self.do_count_instance,
+            "update": self.do_update_instance,
+            "all": self.do_all_instance,
+            "destroy": self.do_destroy_instance
         }
         match = re.search(r"\.", line)
         if match is not None:
@@ -110,7 +110,7 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
             print(obj.id)
 
-    def show_instance(self, line):
+    def do_show_instance(self, line):
         """
         Displays the string representation of
         an instance identified by the class name and ID.
@@ -133,7 +133,7 @@ class HBNBCommand(cmd.Cmd):
                 except KeyError:
                     print('** no instance found **')
 
-    def count_instance(self, line):
+    def do_count_instance(self, line):
         """
         Usage: count <class> or <class>.count()
         Returns the count of instances for a specified class.
@@ -145,7 +145,7 @@ class HBNBCommand(cmd.Cmd):
                 counter += 1
         print(counter)
 
-    def update_instance(self, line):
+    def do_update_instance(self, line):
         """
         Usage: update <class> <id> <attribute_name> <attribute_value> or
         <class>.update(<id>, <attribute_name>, <attribute_value>) or
@@ -204,7 +204,7 @@ class HBNBCommand(cmd.Cmd):
             except KeyError:
                 print('** no instance found **')
 
-    def all_instance(self, line):
+    def do_all_instance(self, line):
         """
         Usage: all or all <class> or <class>.all()
         Displays string representations of all instances
@@ -227,7 +227,7 @@ class HBNBCommand(cmd.Cmd):
                 obj_line.append(value.__str__())
         print(obj_line)
 
-    def destroy_instance(self, line):
+    def do_destroy_instance(self, line):
         """
         Deletes an instance based on the class name and ID
         (saves the change to the JSON file).
@@ -251,15 +251,15 @@ class HBNBCommand(cmd.Cmd):
                 except KeyError:
                     print('** no instance found **')
 
-    def quit_instance(self, line):
+    def do_quit_instance(self, line):
         """Quit command to exit from cmd"""
         return True
 
-    def blank_line_instance(self):
+    def do_blank_line_instance(self):
         """Handles blank lines."""
         pass
 
-    def EOF_instance(self, line):
+    def do_EOF_instance(self, line):
         """Ctrl D - to kill the program or exit from cmd"""
         print()
         return True
