@@ -3,23 +3,18 @@
 Test suite for Amenity class
 """
 import unittest
+from models.base_model import BaseModel
 from models.amenity import Amenity
 
 
-class TestAmenity(unittest.TestCase):
+class TestBaseModel(unittest.TestCase):
+    def test_str(self):
+        amenity = Amenity()
+        self.assertEqual(amenity.name, "")
 
-    def setUp(self):
-        self.new_user = Amenity()
-
-    def tearDown(self):
-        del self.new_user
-
-    def test_user_type(self):
-        self.assertEqual(self.new_user.name, "")
-
-    def test_user_attribute(self):
-        self.new_user.name = "Root"
-        self.assertEqual(self.new_user.name, "Root")
+    def test_parent(self):
+        amenity = Amenity()
+        self.assertTrue(isinstance(amenity, BaseModel))
 
 
 if __name__ == '__main__':
