@@ -45,7 +45,8 @@ def parse_arguments(arg):
 
 class HBNBCommand(cmd.Cmd):
     """
-    The entry point for the command interpreter class for the AirBnB clone project.
+    The entry point for the command interpreter class for
+    the AirBnB clone project.
     """
 
     prompt = '(hbnb) '
@@ -162,7 +163,8 @@ class HBNBCommand(cmd.Cmd):
         if len(arguments) == 1:
             print("** instance id missing **")
             return False
-        if "{}.{}".format(arguments[0], arguments[1]) not in object_dict.keys():
+        if "{}.{}".format(arguments[0], arguments[1]) \
+                not in object_dict.keys():
             print("** no instance found **")
             return False
         if len(arguments) == 2:
@@ -186,7 +188,8 @@ class HBNBCommand(cmd.Cmd):
             objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
             for key, val in eval(arguments[2]).items():
                 if key in objct.__class__.__dict__.keys() and \
-                type(objct.__class__.__dict__[key]) in {str, int, float}:
+                        type(objct.__class__.__dict__[key]) in \
+                        {str, int, float}:
                     value_type = type(objct.__class__.__dict__[key])
                     objct.__dict__[key] = value_type(val)
                 else:
@@ -196,8 +199,10 @@ class HBNBCommand(cmd.Cmd):
     def all_instance(self, line):
         """
         Usage: all or all <class> or <class>.all()
-        Displays string representations of all instances of a specified class.
-        If no class is specified, it shows representations of all instantiated objects.
+        Displays string representations of all instances
+        of a specified class.
+        If no class is specified, it shows representations
+        of all instantiated objects.
         """
         arguments = parse_arguments(line)
 
