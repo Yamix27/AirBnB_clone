@@ -49,11 +49,11 @@ class TestHBNBCommand(TestCase):
     def test_blank_line_instance(self):
         self.assert_stdout("\n")
 
-    def test_EOF_instance(self):
+    def test_EOF_instance(self, line):
         with self.assertRaises(SystemExit):
             self.assert_stdout("EOF\n")
 
-    def test_EOF_instance(self):
+    def test_EOF_instance(self, line):
         with self.assertRaises(SystemExit):
             self.assert_stdout("EOF\n")
 
