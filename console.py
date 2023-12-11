@@ -88,27 +88,18 @@ class HBNBCommand(cmd.Cmd):
         saves it to the JSON file, and displays the ID.
         Example: $ create BaseModel
         """
-        if line == '':
-            print('** class name missing **')
-        elif line not in HBNBCommand.classes:
-            print('** class doesn\'t exist **')
-        else:
-            if line == 'BaseModel':
-                obj = BaseModel()
-            elif line == 'User':
-                obj = User()
-            elif line == 'Place':
-                obj = Place()
-            elif line == 'State':
-                obj = State()
-            elif line == 'City':
-                obj = City()
-            elif line == 'Amenity':
-                obj = Amenity()
-            elif line == 'Review':
-                obj = Review()
-            storage.save()
-            print(obj.id)
+        arguments = parse_arguments(line)
+        if not arguments:
+            print("** class name missing **")
+            return
+        try:
+            new_inst_cls = globals()[arguments[0]]
+            new_inst = new_inst_cls()
+            new_inst.save()
+            print(new_inst.id)
+        except Exception:
+            print("** class doesn't exist **")
+        return
 
     def do_show_instance(self, line):
         """
@@ -116,22 +107,29 @@ class HBNBCommand(cmd.Cmd):
         an instance identified by the class name and ID.
         Example: $ show BaseModel 1111-2222-3333
         """
-        arguments = line.split()
-        if line == '':
-            print('** class name missing **')
-        elif arguments[0] not in HBNBCommand.classes:
-            print('** class doesn\'t exist **')
-        else:
-            if len(arguments) < 2:
-                print('** instance id missing **')
+        arguments = parse_arguments(line)
+        if not arguments:
+            print("** class name missing **")
+            return
+        class_name = arguments[0]
+        try:
+            cls = globals()[class_name]
+        except Exception:
+            print(f"** class doesn't exist **")
+            return
+        if len(arguments) < 2:
+            print("** instance id missing **")
+            return
+        inst_id = arguments[1]
+        key = f"{class_name}.{inst_id}"
+        try:
+            res = storage.all().get(key)
+            if res is None:
+                print("** no instance found **")
             else:
-                class_name = arguments[0]
-                inst_id = arguments[1]
-                key = class_name + '.' + inst_id
-                try:
-                    print(storage.all()[key])
-                except KeyError:
-                    print('** no instance found **')
+                print(res)
+        except Exception:
+            pass
 
     def do_count_instance(self, line):
         """
@@ -145,7 +143,7 @@ class HBNBCommand(cmd.Cmd):
                 counter += 1
         print(counter)
 
-    def do_update_instance(self, line):
+    def do_update_instance(self, arg):
         """
         Usage: update <class> <id> <attribute_name> <attribute_value> or
         <class>.update(<id>, <attribute_name>, <attribute_value>) or
@@ -153,56 +151,50 @@ class HBNBCommand(cmd.Cmd):
         Updates a class instance identified by ID by adding or modifying
         the specified attribute key/value pair or dictionary.
         """
-        arguments = line.split()
-        
-        if not line:
-            print('** class name missing **')
-        elif arguments[0] not in HBNBCommand.classes:
-            print('** class doesn\'t exist **')
-        elif len(arguments) < 2:
-            print('** instance id missing **')
-        elif len(arguments) < 3:
-            print('** attribute name missing **')
-        elif len(arguments) < 4:
-            print('** value missing **')
-        else:
-            class_name, objid, attr, value = arguments[:4]
-            objAttr = ['id', 'created_at', 'updated_at']
-            
-            if attr in objAttr:
-                print('** attribute can\'t be updated **')
-                return
+        arguments = parse_arguments(arg)
+        object_dict = storage.all()
 
-            if (value[0] == '"' and value[-1] == '"') or value[0] == "'":
-                if value[0] != '"':
-                    print("** A string argument must be between double quotes **")
-                    return
-                value = value[1:-1]
-            else:
-                try:
-                    for c in value:
-                        if c == '.':
-                            value = float(value)
-                            break
-                    else:
-                        value = int(value)
-                except ValueError:
-                    print("** The value must be a string, int, or float **")
-                    return
-
-            if (attr[0] == '"' and attr[-1] == '"') or attr[0] == "'" or attr[-1] == "'":
-                if attr[0] != '"' or attr[-1] == "'":
-                    print("** The attribute name must be between double quotes **")
-                    return
-                attr = attr[1:-1]
-            
-            key = f"{class_name}.{objid}"
+        if len(arguments) == 0:
+            print("** class name missing **")
+            return False
+        if arguments[0] not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return False
+        if len(arguments) == 1:
+            print("** instance id missing **")
+            return False
+        if "{}.{}".format(arguments[0], arguments[1]) \
+                not in object_dict.keys():
+            print("** no instance found **")
+            return False
+        if len(arguments) == 2:
+            print("** attribute name missing **")
+            return False
+        if len(arguments) == 3:
             try:
-                instance = storage.all()[key]
-                setattr(instance, attr, value)
-                instance.save()
-            except KeyError:
-                print('** no instance found **')
+                type(eval(arguments[2])) != dict
+            except NameError:
+                print("** value missing **")
+                return False
+
+        if len(arguments) == 4:
+            objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
+            if arguments[2] in objct.__class__.__dict__.keys():
+                value_type = type(objct.__class__.__dict__[arguments[2]])
+                objct.__dict__[arguments[2]] = value_type(arguments[3])
+            else:
+                objct.__dict__[arguments[2]] = arguments[3]
+        elif type(eval(arguments[3])) == dict:
+            objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
+            for key, val in eval(arguments[2]).items():
+                if key in objct.__class__.__dict__.keys() and \
+                        type(objct.__class__.__dict__[key]) in \
+                        {str, int, float}:
+                    value_type = type(objct.__class__.__dict__[key])
+                    objct.__dict__[key] = value_type(val)
+                else:
+                    objct.__dict__[key] = val
+        storage.save()
 
     def do_all_instance(self, line):
         """
@@ -212,19 +204,24 @@ class HBNBCommand(cmd.Cmd):
         If no class is specified, it shows representations
         of all instantiated objects.
         """
-        arguments = line.split()
-        obj_line = []
-        if len(arguments) != 0:
-            if arguments[0] not in HBNBCommand.classes:
-                print('** class doesn\'t exist **')
+        arguments = parse_arguments(line)
+
+        if len(arguments) > 0:
+            class_name = arguments[0]
+            try:
+                cls = globals()[class_name]
+            except KeyError:
+                print("** class doesn't exist **")
                 return
-            else:
-                for key, value in storage.all().items():
-                    if type(value).__name__ == arguments[0]:
-                        obj_line.append(value.__str__())
         else:
-            for key, value in storage.all().items():
-                obj_line.append(value.__str__())
+            class_name = None
+
+        obj_line = []
+
+        for objct in storage.all().values():
+            if class_name is None or isinstance(objct, cls):
+                obj_line.append(objct.__str__())
+
         print(obj_line)
 
     def do_destroy_instance(self, line):
@@ -233,23 +230,33 @@ class HBNBCommand(cmd.Cmd):
         (saves the change to the JSON file).
         Example: $ destroy BaseModel 1111-2222-3333.
         """
-        arguments = line.split()
-        if line == '':
-            print('** class name missing **')
-        elif arguments[0] not in HBNBCommand.classes:
-            print('** class doesn\'t exist **')
-        else:
-            if len(arguments) < 2:
-                print('** instance id missing **')
+        arguments = parse_arguments(line)
+        if not arguments:
+            print("** class name missing **")
+            return
+        class_name = arguments[0]
+        try:
+            cls = globals()[class_name]
+        except Exception:
+            print(f"** class doesn't exist **")
+            return
+        if len(arguments) < 2:
+            print("** instance id missing **")
+            return
+
+        inst_id = arguments[1]
+        key = f"{class_name}.{inst_id}"
+        try:
+            data_k = storage.all().get(key)
+            if data_k is None:
+                print("** no instance found **")
+                return
             else:
-                class_name = arguments[0]
-                objid = arguments[1]
-                key = class_name + '.' + objid
-                try:
-                    del storage.all()[key]
-                    storage.save()
-                except KeyError:
-                    print('** no instance found **')
+                result = storage.all()
+                del result[key]
+                storage.save()
+        except Exception:
+            pass
 
     def do_quit_instance(self, line):
         """Quit command to exit from cmd"""
