@@ -87,17 +87,26 @@ class FileStorage:
         """
         Deserializes the JSON file to the stored instance.
         """
-        if os.path.exists(self.__file_path):
-            try:
-                with open(self.__file_path, "r",
-                          encoding="utf-8") as data_file:
-                    json_data = json.load(data_file)
-                    for key, value in json_data.items():
-                        if '.' in key:
-                            class_name, obj_id = key.split('.')
-                            class_obj = globals()[class_name]
-                            new_instance = class_obj(**value)
-                            self.new(new_instance)
-                            self.__objects[key] = new_instance
-            except FileNotFoundError:
-                pass
+        try:
+            with open(FileStorage.__file_path, 'r') as f:
+                dictofobjs = json.loads(f.read())
+                from models.base_model import BaseModel
+                from models.user import User
+                for key, value in dictofobjs.items():
+                    if value['__class__'] == 'BaseModel':
+                        FileStorage.__objects[key] = BaseModel(**value)
+                    elif value['__class__'] == 'User':
+                        FileStorage.__objects[key] = User(**value)
+                    elif value['__class__'] == 'Place':
+                        FileStorage.__objects[key] = Place(**value)
+                    elif value['__class__'] == 'State':
+                        FileStorage.__objects[key] = State(**value)
+                    elif value['__class__'] == 'City':
+                        FileStorage.__objects[key] = City(**value)
+                    elif value['__class__'] == 'Amenity':
+                        FileStorage.__objects[key] = Amenity(**value)
+                    elif value['__class__'] == 'Review':
+                        FileStorage.__objects[key] = Review(**value)
+
+        except FileNotFoundError:
+            pass
