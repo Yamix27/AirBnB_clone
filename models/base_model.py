@@ -33,8 +33,6 @@ base_model.save()  # Persist changes to JSON file
 base_model_dict = base_model.to_dict()
 """
 
-
-
 from datetime import datetime
 import models
 import uuid
