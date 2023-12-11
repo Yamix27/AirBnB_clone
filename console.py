@@ -153,23 +153,23 @@ class HBNBCommand(cmd.Cmd):
         Updates a class instance identified by ID by adding or modifying
         the specified attribute key/value pair or dictionary.
         """
-        args = line.split()
+        arguments = line.split()
         
         if not line:
             print('** class name missing **')
-        elif args[0] not in HBNBCommand.classes:
+        elif arguments[0] not in HBNBCommand.classes:
             print('** class doesn\'t exist **')
-        elif len(args) < 2:
+        elif len(arguments) < 2:
             print('** instance id missing **')
-        elif len(args) < 3:
+        elif len(arguments) < 3:
             print('** attribute name missing **')
-        elif len(args) < 4:
+        elif len(arguments) < 4:
             print('** value missing **')
         else:
-            classname, objid, attr, value = args[:4]
-            oob = ['id', 'created_at', 'updated_at']
+            class_name, objid, attr, value = arguments[:4]
+            objAttr = ['id', 'created_at', 'updated_at']
             
-            if attr in oob:
+            if attr in objAttr:
                 print('** attribute can\'t be updated **')
                 return
 
@@ -196,7 +196,7 @@ class HBNBCommand(cmd.Cmd):
                     return
                 attr = attr[1:-1]
             
-            key = f"{classname}.{objid}"
+            key = f"{class_name}.{objid}"
             try:
                 instance = storage.all()[key]
                 setattr(instance, attr, value)
@@ -212,24 +212,19 @@ class HBNBCommand(cmd.Cmd):
         If no class is specified, it shows representations
         of all instantiated objects.
         """
-        arguments = parse_arguments(line)
-
-        if len(arguments) > 0:
-            class_name = arguments[0]
-            try:
-                cls = globals()[class_name]
-            except KeyError:
-                print("** class doesn't exist **")
-                return
-        else:
-            class_name = None
-
+        arguments = line.split()
         obj_line = []
-
-        for objct in storage.all().values():
-            if class_name is None or isinstance(objct, cls):
-                obj_line.append(objct.__str__())
-
+        if len(arguments) != 0:
+            if arguments[0] not in HBNBCommand.classes:
+                print('** class doesn\'t exist **')
+                return
+            else:
+                for key, value in storage.all().items():
+                    if type(value).__name__ == arguments[0]:
+                        obj_line.append(value.__str__())
+        else:
+            for key, value in storage.all().items():
+                obj_line.append(value.__str__())
         print(obj_line)
 
     def destroy_instance(self, line):
@@ -238,33 +233,23 @@ class HBNBCommand(cmd.Cmd):
         (saves the change to the JSON file).
         Example: $ destroy BaseModel 1111-2222-3333.
         """
-        arguments = parse_arguments(line)
-        if not arguments:
-            print("** class name missing **")
-            return
-        class_name = arguments[0]
-        try:
-            cls = globals()[class_name]
-        except Exception:
-            print(f"** class doesn't exist **")
-            return
-        if len(arguments) < 2:
-            print("** instance id missing **")
-            return
-
-        inst_id = arguments[1]
-        key = f"{class_name}.{inst_id}"
-        try:
-            data_k = storage.all().get(key)
-            if data_k is None:
-                print("** no instance found **")
-                return
+        arguments = line.split()
+        if line == '':
+            print('** class name missing **')
+        elif arguments[0] not in HBNBCommand.classes:
+            print('** class doesn\'t exist **')
+        else:
+            if len(arguments) < 2:
+                print('** instance id missing **')
             else:
-                result = storage.all()
-                del result[key]
-                storage.save()
-        except Exception:
-            pass
+                class_name = arguments[0]
+                objid = arguments[1]
+                key = class_name + '.' + objid
+                try:
+                    del storage.all()[key]
+                    storage.save()
+                except KeyError:
+                    print('** no instance found **')
 
     def quit_instance(self, line):
         """Quit command to exit from cmd"""
