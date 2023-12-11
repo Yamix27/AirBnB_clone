@@ -145,7 +145,7 @@ class HBNBCommand(cmd.Cmd):
                 counter += 1
         print(counter)
 
-    def update_instance(self, arg):
+    def update_instance(self, line):
         """
         Usage: update <class> <id> <attribute_name> <attribute_value> or
         <class>.update(<id>, <attribute_name>, <attribute_value>) or
@@ -153,50 +153,56 @@ class HBNBCommand(cmd.Cmd):
         Updates a class instance identified by ID by adding or modifying
         the specified attribute key/value pair or dictionary.
         """
-        arguments = parse_arguments(arg)
-        object_dict = storage.all()
+        args = line.split()
+        
+        if not line:
+            print('** class name missing **')
+        elif args[0] not in HBNBCommand.classes:
+            print('** class doesn\'t exist **')
+        elif len(args) < 2:
+            print('** instance id missing **')
+        elif len(args) < 3:
+            print('** attribute name missing **')
+        elif len(args) < 4:
+            print('** value missing **')
+        else:
+            classname, objid, attr, value = args[:4]
+            oob = ['id', 'created_at', 'updated_at']
+            
+            if attr in oob:
+                print('** attribute can\'t be updated **')
+                return
 
-        if len(arguments) == 0:
-            print("** class name missing **")
-            return False
-        if arguments[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return False
-        if len(arguments) == 1:
-            print("** instance id missing **")
-            return False
-        if "{}.{}".format(arguments[0], arguments[1]) \
-                not in object_dict.keys():
-            print("** no instance found **")
-            return False
-        if len(arguments) == 2:
-            print("** attribute name missing **")
-            return False
-        if len(arguments) == 3:
-            try:
-                type(eval(arguments[2])) != dict
-            except NameError:
-                print("** value missing **")
-                return False
-
-        if len(arguments) == 4:
-            objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
-            if arguments[2] in objct.__class__.__dict__.keys():
-                value_type = type(objct.__class__.__dict__[arguments[2]])
-                objct.__dict__[arguments[2]] = value_type(arguments[3])
+            if (value[0] == '"' and value[-1] == '"') or value[0] == "'":
+                if value[0] != '"':
+                    print("** A string argument must be between double quotes **")
+                    return
+                value = value[1:-1]
             else:
-                objct.__dict__[arguments[2]] = arguments[3]
-        elif type(eval(arguments[3])) == dict:
-            objct = object_dict["{}.{}".format(arguments[0], arguments[1])]
-            for key, val in eval(arguments[2]).items():
-                if key in objct.__class__.__dict__.keys() and \
-                        type(objct.__class__.__dict__[key]) in \
-                        {str, int, float}:
-                    value_type = type(objct.__class__.__dict__[key])
-                    objct.__dict__[key] = value_type(val)
-                else:
-                    objct.__dict__[key] = val
-        storage.save()
+                try:
+                    for c in value:
+                        if c == '.':
+                            value = float(value)
+                            break
+                    else:
+                        value = int(value)
+                except ValueError:
+                    print("** The value must be a string, int, or float **")
+                    return
+
+            if (attr[0] == '"' and attr[-1] == '"') or attr[0] == "'" or attr[-1] == "'":
+                if attr[0] != '"' or attr[-1] == "'":
+                    print("** The attribute name must be between double quotes **")
+                    return
+                attr = attr[1:-1]
+            
+            key = f"{classname}.{objid}"
+            try:
+                instance = storage.all()[key]
+                setattr(instance, attr, value)
+                instance.save()
+            except KeyError:
+                print('** no instance found **')
 
     def all_instance(self, line):
         """
@@ -270,7 +276,7 @@ class HBNBCommand(cmd.Cmd):
 
     def EOF_instance(self, line):
         """Ctrl D - to kill the program or exit from cmd"""
-        print("")
+        print()
         return True
 
 
