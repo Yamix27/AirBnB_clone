@@ -76,7 +76,7 @@ class HBNBCommand(cmd.Cmd):
         'City',
         'Place'
     ]
-    
+
     def default(self, arg):
         """
         Default behavior for the cmd module when processing input

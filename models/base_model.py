@@ -52,7 +52,7 @@ class BaseModel:
         self.id = str(uuid.uuid4())
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
-        
+
         if kwargs:
             for key, value in kwargs.items():
                 if key == "__class__":
@@ -84,10 +84,10 @@ class BaseModel:
         Turns the instance attributes into a dictionary representation
         using 'simple object type'.
         """
-        dic_rep  = self.__dict__.copy()
-        dic_rep ["__class__"] = self.__class__.__name__
-        dic_rep ["created_at"] = self.created_at.isoformat()
-        dic_rep ["updated_at"] = self.updated_at.isoformat()
+        dic_rep = self.__dict__.copy()
+        dic_rep["__class__"] = self.__class__.__name__
+        dic_rep["created_at"] = self.created_at.isoformat()
+        dic_rep["updated_at"] = self.updated_at.isoformat()
 
         return dic_rep
 
@@ -104,7 +104,11 @@ if __name__ == "__main__":
     print(my_model_json)
     print("JSON of my_model:")
     for key in my_model_json.keys():
-        print("\t{}: ({}) - {}".format(key, type(my_model_json[key]), my_model_json[key]))
+        print("\t{}: ({}) - {}".format(
+            key,
+            type(my_model_json[key]),
+            my_model_json[key]
+        ))
 
     print("--")
     my_new_model = BaseModel(**my_model_json)
