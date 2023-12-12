@@ -61,7 +61,7 @@ class FileStorage:
         Returns:
             dict: A dictionary containing all stored objects.
         """
-        return self.__objects
+        return  FileStorage.__objects
 
     def new(self, obj):
         """
@@ -70,41 +70,39 @@ class FileStorage:
         Args:
             obj (BaseModel): The Added object into storage.
         """
-        key = f"{obj.__class__.__name__}.{obj.id}"
-        self.__objects[key] = obj
+        obj_class_name = obj.__class__.__name__
+        key = "{}.{}".format(obj_class_name, obj.id)
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """
         Serializes stored instance to the JSON file.
         """
-        with open(FileStorage.__file_path, 'w+') as f:
-            res = {}
-            for key, value in FileStorage.__objects.items():
-                res[key] = value.to_dict()
-            json.dump(res, f)
+        objs = FileStorage.__objects
+        obj_dict = {}
+
+        for obj in objs.keys():
+            obj_dict[obj] = objs[obj].to_dict()
+
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as file:
+            json.dump(obj_dict, file)
 
     def reload(self):
         """
         Deserializes the JSON file to the stored instance.
         """
-        try:
-            with open(FileStorage.__file_path, 'r') as f:
-                dictofobjs = json.loads(f.read())
-                for key, value in dictofobjs.items():
-                    if value['__class__'] == 'BaseModel':
-                        FileStorage.__objects[key] = BaseModel(**value)
-                    elif value['__class__'] == 'User':
-                        FileStorage.__objects[key] = User(**value)
-                    elif value['__class__'] == 'Place':
-                        FileStorage.__objects[key] = Place(**value)
-                    elif value['__class__'] == 'State':
-                        FileStorage.__objects[key] = State(**value)
-                    elif value['__class__'] == 'City':
-                        FileStorage.__objects[key] = City(**value)
-                    elif value['__class__'] == 'Amenity':
-                        FileStorage.__objects[key] = Amenity(**value)
-                    elif value['__class__'] == 'Review':
-                        FileStorage.__objects[key] = Review(**value)
+        if os.path.isfile(FileStorage.__file_path):
+            with open(FileStorage.__file_path, "r", encoding="utf-8") as file:
+                try:
+                    obj_dict = json.load(file)
 
-        except FileNotFoundError:
-            pass
+                    for key, value in obj_dict.items():
+                        class_name, obj_id = key.split('.')
+
+                        cls = eval(class_name)
+
+                        instance = cls(**value)
+
+                        FileStorage.__objects[key] = instance
+                except Exception:
+                    pass
