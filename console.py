@@ -125,7 +125,7 @@ class HBNBCommand(cmd.Cmd):
 
         if len(command_prompts) == 0:
             print("** class name missing **")
-        elif command_prompts[0] not in self.valid_classes:
+        elif command_prompts[0] not in self.classes:
             print("** class doesn't exist **")
         else:
             new_instance = eval(f"{command_prompts[0]}()")
@@ -142,7 +142,7 @@ class HBNBCommand(cmd.Cmd):
 
         if len(command_prompts) == 0:
             print("** class name missing **")
-        elif command_prompts[0] not in self.valid_classes:
+        elif command_prompts[0] not in self.classes:
             print("** class doesn't exist **")
         elif len(command_prompts) < 2:
             print("** instance id missing **")
@@ -169,7 +169,7 @@ class HBNBCommand(cmd.Cmd):
         count = 0
 
         if command_prompts:
-            if class_nm in self.valid_classes:
+            if class_nm in self.classes:
                 for obj in objcs.values():
                     if obj.__class__.__name__ == class_nm:
                         count += 1
@@ -191,7 +191,7 @@ class HBNBCommand(cmd.Cmd):
 
         if len(command_prompts) == 0:
             print("** class name missing **")
-        elif command_prompts[0] not in self.valid_classes:
+        elif command_prompts[0] not in self.classes:
             print("** class doesn't exist **")
         elif len(command_prompts) < 2:
             print("** instance id missing **")
@@ -258,7 +258,7 @@ class HBNBCommand(cmd.Cmd):
         if len(command_prompts) == 0:
             for key, value in objs.items():
                 print(str(value))
-        elif command_prompts[0] not in self.valid_classes:
+        elif command_prompts[0] not in self.classes:
             print("** class doesn't exist **")
         else:
             for key, value in objs.items():
@@ -275,7 +275,7 @@ class HBNBCommand(cmd.Cmd):
 
         if len(command_prompts) == 0:
             print("** class name missing **")
-        elif command_prompts[0] not in self.valid_classes:
+        elif command_prompts[0] not in self.classes:
             print("** class doesn't exist **")
         elif len(command_prompts) < 2:
             print("** instance id missing **")
