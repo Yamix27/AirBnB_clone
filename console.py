@@ -88,11 +88,11 @@ class HBNBCommand(cmd.Cmd):
         inp_arg = cmd[1].split(')')[0]
 
         cmd_args = {
-            'all': self.do_all,
-            'show': self.do_show,
-            'destroy': self.do_destroy,
-            'update': self.do_update,
-            'count': self.do_count
+            'all': self.do_all_instance,
+            'show': self.do_show_instance,
+            'destroy': self.do_destroy_instance,
+            'update': self.do_update_instance,
+            'count': self.do_count_instance
         }
 
         if command_md in cmd_args.keys():
@@ -115,7 +115,7 @@ class HBNBCommand(cmd.Cmd):
             print("*** Unknown syntax: {}".format(arg))
             return False
 
-    def do_create(self, arg):
+    def do_create_instance(self, arg):
         """
         Generates a new instance of a given class,
         saves it to the JSON file, and displays the ID.
@@ -132,7 +132,7 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
             print(new_instance.id)
 
-    def do_show(self, arg):
+    def do_show_instance(self, arg):
         """
         Displays the string representation of
         an instance identified by the class name and ID.
@@ -155,7 +155,7 @@ class HBNBCommand(cmd.Cmd):
             else:
                 print("** no instance found **")
 
-    def do_count(self, arg):
+    def do_count_instance(self, arg):
         """
         Usage: count <class> or <class>.count()
         Returns the count of instances for a specified class.
@@ -179,7 +179,7 @@ class HBNBCommand(cmd.Cmd):
         else:
             print("** class name missing **")
 
-    def do_update(self, arg):
+    def do_update_instance(self, arg):
         """
         Usage: update <class> <id> <attribute_name> <attribute_value> or
         <class>.update(<id>, <attribute_name>, <attribute_value>) or
@@ -244,7 +244,7 @@ class HBNBCommand(cmd.Cmd):
 
                 obj.save()
 
-    def do_all(self, arg):
+    def do_all_instance(self, arg):
         """
         Usage: all or all <class> or <class>.all()
         Displays string representations of all instances
@@ -265,7 +265,7 @@ class HBNBCommand(cmd.Cmd):
                 if key.split('.')[0] == command_prompts[0]:
                     print(str(value))
 
-    def do_destroy(self, arg):
+    def do_destroy_instance(self, arg):
         """
         Deletes an instance based on the class name and ID
         (saves the change to the JSON file).
